@@ -51,81 +51,124 @@
                   New Item
                 </v-btn>
               </template>
-              <v-card>
-                <v-card-title>
-                  <span class="headline">{{ formTitle }}</span>
-                </v-card-title>
+              <v-form v-model="valid">
+                <v-container>
+                  <v-row>
+                    <v-col
+                      cols="12"
+                      md="4"
+                    >
+                      <v-text-field
+                        v-model="firstname"
+                        :rules="nameRules"
+                        :counter="10"
+                        label="First name"
+                        required
+                      ></v-text-field>
+                    </v-col>
 
-                <v-card-text>
-                  <v-container>
-                    <v-row>
-                      <v-col
-                        cols="12"
-                        sm="6"
-                      >
-                        <v-text-field
-                          v-model="curItem.name"
-                          label="Dessert name"
-                        ></v-text-field>
-                      </v-col>
-                      <v-col
-                        cols="12"
-                        sm="6"
-                      >
-                        <v-text-field
-                          v-model="curItem.calories"
-                          label="Calories"
-                        ></v-text-field>
-                      </v-col>
-                      <v-col
-                        cols="12"
-                        sm="6"
-                      >
-                        <v-text-field
-                          v-model="curItem.fat"
-                          label="Fat (g)"
-                        ></v-text-field>
-                      </v-col>
-                      <v-col
-                        cols="12"
-                        sm="6"
-                      >
-                        <v-text-field
-                          v-model="curItem.carbs"
-                          label="Carbs (g)"
-                        ></v-text-field>
-                      </v-col>
-                      <v-col
-                        cols="12"
-                        sm="6"
-                      >
-                        <v-text-field
-                          v-model="curItem.protein"
-                          label="Protein (g)"
-                        ></v-text-field>
-                      </v-col>
-                    </v-row>
-                  </v-container>
-                </v-card-text>
+                    <v-col
+                      cols="12"
+                      md="4"
+                    >
+                      <v-text-field
+                        v-model="lastname"
+                        :rules="nameRules"
+                        :counter="10"
+                        label="Last name"
+                        required
+                      ></v-text-field>
+                    </v-col>
 
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn
-                    color="blue darken-1"
-                    text
-                    @click="hideModalM(false)"
-                  >
-                    Cancel
-                  </v-btn>
-                  <v-btn
-                    color="blue darken-1"
-                    text
-                    @click="saveNewItem(curItem)"
-                  >
-                    Save
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
+                    <v-col
+                      cols="12"
+                      md="4"
+                    >
+                      <v-text-field
+                        v-model="email"
+                        :rules="emailRules"
+                        label="E-mail"
+                        required
+                      ></v-text-field>
+                    </v-col>
+                  </v-row>
+                </v-container>
+              </v-form>
+<!--              <v-card>-->
+<!--                <v-card-title>-->
+<!--                  <span class="headline">{{ formTitle }}</span>-->
+<!--                </v-card-title>-->
+
+<!--                <v-card-text>-->
+<!--                  <v-container>-->
+<!--                    <v-row>-->
+<!--                      <v-col-->
+<!--                        cols="12"-->
+<!--                        sm="6"-->
+<!--                      >-->
+<!--                        <v-text-field-->
+<!--                          v-model="curItem.name"-->
+<!--                          label="Dessert name"-->
+<!--                        ></v-text-field>-->
+<!--                      </v-col>-->
+<!--                      <v-col-->
+<!--                        cols="12"-->
+<!--                        sm="6"-->
+<!--                      >-->
+<!--                        <v-text-field-->
+<!--                          v-model="curItem.calories"-->
+<!--                          label="Calories"-->
+<!--                        ></v-text-field>-->
+<!--                      </v-col>-->
+<!--                      <v-col-->
+<!--                        cols="12"-->
+<!--                        sm="6"-->
+<!--                      >-->
+<!--                        <v-text-field-->
+<!--                          v-model="curItem.fat"-->
+<!--                          label="Fat (g)"-->
+<!--                        ></v-text-field>-->
+<!--                      </v-col>-->
+<!--                      <v-col-->
+<!--                        cols="12"-->
+<!--                        sm="6"-->
+<!--                      >-->
+<!--                        <v-text-field-->
+<!--                          v-model="curItem.carbs"-->
+<!--                          label="Carbs (g)"-->
+<!--                        ></v-text-field>-->
+<!--                      </v-col>-->
+<!--                      <v-col-->
+<!--                        cols="12"-->
+<!--                        sm="6"-->
+<!--                      >-->
+<!--                        <v-text-field-->
+<!--                          v-model="curItem.protein"-->
+<!--                          label="Protein (g)"-->
+<!--                        ></v-text-field>-->
+<!--                      </v-col>-->
+<!--                    </v-row>-->
+<!--                  </v-container>-->
+<!--                </v-card-text>-->
+
+<!--                <v-card-actions>-->
+<!--                  <v-spacer></v-spacer>-->
+<!--                  <v-btn-->
+<!--                    color="blue darken-1"-->
+<!--                    text-->
+<!--                    @click="hideModalM(false)"-->
+<!--                  >-->
+<!--                    Cancel-->
+<!--                  </v-btn>-->
+<!--                  <v-btn-->
+<!--                    color="blue darken-1"-->
+<!--                    text-->
+<!--                    @click="saveNewItem(curItem)"-->
+<!--                  >-->
+<!--                    Save-->
+<!--                  </v-btn>-->
+<!--                </v-card-actions>-->
+<!--              </v-card>-->
             </v-dialog>
             <v-dialog
               v-model="dialogDelete"
@@ -171,11 +214,24 @@
   </v-container>
 </template>
 <script>
+  // import { email } from 'vee-validate'
   import { entities } from '@/store/modules'
   import { mapFields } from '@/js/update_form.js'
   export default {
     name: 'ManageEntities',
     data: () => ({
+      valid: false,
+      firstname: '',
+      lastname: '',
+      nameRules: [
+        v => !!v || 'Name is required',
+        v => v.length <= 10 || 'Name must be less than 10 characters',
+      ],
+      email: '',
+      emailRules: [
+        v => !!v || 'E-mail is required',
+        v => /.+@.+/.test(v) || 'E-mail must be valid',
+      ],
       dialog: false,
       dialogDelete: false,
       options: {},
@@ -260,3 +316,10 @@
     },
   }
 </script>
+<style>
+  .v-dialog.v-dialog--active {
+    height: 500px;
+    max-width: 1000px !important;
+    background: #fff;
+  }
+</style>
