@@ -51,151 +51,72 @@
                   New Item
                 </v-btn>
               </template>
-              <v-form v-model="valid">
-                <v-container>
-                  <v-row>
-                    <v-col
-                      cols="12"
-                      md="4"
-                    >
-                      <v-text-field
-                        v-model="firstname"
-                        :rules="nameRules"
-                        :counter="10"
-                        label="First name"
-                        required
-                      ></v-text-field>
-                    </v-col>
-
-                    <v-col
-                      cols="12"
-                      md="4"
-                    >
-                      <v-text-field
-                        v-model="lastname"
-                        :rules="nameRules"
-                        :counter="10"
-                        label="Last name"
-                        required
-                      ></v-text-field>
-                    </v-col>
-
-                    <v-col
-                      cols="12"
-                      md="4"
-                    >
-                      <v-text-field
-                        v-model="email"
-                        :rules="emailRules"
-                        label="E-mail"
-                        required
-                      ></v-text-field>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-form>
-<!--              <v-card>-->
-<!--                <v-card-title>-->
-<!--                  <span class="headline">{{ formTitle }}</span>-->
-<!--                </v-card-title>-->
-
-<!--                <v-card-text>-->
-<!--                  <v-container>-->
-<!--                    <v-row>-->
-<!--                      <v-col-->
-<!--                        cols="12"-->
-<!--                        sm="6"-->
-<!--                      >-->
-<!--                        <v-text-field-->
-<!--                          v-model="curItem.name"-->
-<!--                          label="Dessert name"-->
-<!--                        ></v-text-field>-->
-<!--                      </v-col>-->
-<!--                      <v-col-->
-<!--                        cols="12"-->
-<!--                        sm="6"-->
-<!--                      >-->
-<!--                        <v-text-field-->
-<!--                          v-model="curItem.calories"-->
-<!--                          label="Calories"-->
-<!--                        ></v-text-field>-->
-<!--                      </v-col>-->
-<!--                      <v-col-->
-<!--                        cols="12"-->
-<!--                        sm="6"-->
-<!--                      >-->
-<!--                        <v-text-field-->
-<!--                          v-model="curItem.fat"-->
-<!--                          label="Fat (g)"-->
-<!--                        ></v-text-field>-->
-<!--                      </v-col>-->
-<!--                      <v-col-->
-<!--                        cols="12"-->
-<!--                        sm="6"-->
-<!--                      >-->
-<!--                        <v-text-field-->
-<!--                          v-model="curItem.carbs"-->
-<!--                          label="Carbs (g)"-->
-<!--                        ></v-text-field>-->
-<!--                      </v-col>-->
-<!--                      <v-col-->
-<!--                        cols="12"-->
-<!--                        sm="6"-->
-<!--                      >-->
-<!--                        <v-text-field-->
-<!--                          v-model="curItem.protein"-->
-<!--                          label="Protein (g)"-->
-<!--                        ></v-text-field>-->
-<!--                      </v-col>-->
-<!--                    </v-row>-->
-<!--                  </v-container>-->
-<!--                </v-card-text>-->
-
-<!--                <v-card-actions>-->
-<!--                  <v-spacer></v-spacer>-->
-<!--                  <v-btn-->
-<!--                    color="blue darken-1"-->
-<!--                    text-->
-<!--                    @click="hideModalM(false)"-->
-<!--                  >-->
-<!--                    Cancel-->
-<!--                  </v-btn>-->
-<!--                  <v-btn-->
-<!--                    color="blue darken-1"-->
-<!--                    text-->
-<!--                    @click="saveNewItem(curItem)"-->
-<!--                  >-->
-<!--                    Save-->
-<!--                  </v-btn>-->
-<!--                </v-card-actions>-->
-<!--              </v-card>-->
-            </v-dialog>
-            <v-dialog
-              v-model="dialogDelete"
-              max-width="500px"
-            >
-              <v-card>
-                <v-card-title class="headline">Are you sure you want to delete this item?</v-card-title>
-                <v-card-actions>
-                  <v-spacer></v-spacer>
+              <form
+                class="pa-4"
+              >
+                <template-field></template-field>
+                <v-btn
+                  color="red"
+                  @click="clear"
+                >
+                  Очистить
+                </v-btn>
+                <v-btn
+                  color="primary"
+                  class="mr-4"
+                  @click="saveNewField"
+                >
+                  Сохранить
+                </v-btn>
+                <v-btn
+                  color="blue"
+                  @click="addTemplateField"
+                >
+                   Добавить ещё поле
+                </v-btn>
+                <v-spacer />
+                <v-row class="mt-10">
                   <v-btn
-                    color="blue darken-1"
-                    text
-                    @click="hideModalDelM(false)"
-                  >Cancel</v-btn>
-                  <v-btn
-                    color="blue darken-1"
-                    text
-                    @click="deleteItemConfirm"
-                  >OK</v-btn>
-                  <v-spacer></v-spacer>
-                </v-card-actions>
-              </v-card>
+                    class="ml-4 mr-4"
+                    @click="submit"
+                  >
+                    Отправить
+                  </v-btn>
+                </v-row>
+<!--                <v-text-field-->
+<!--                  v-model="nameField"-->
+<!--                  :error-messages="nameFieldErrors"-->
+<!--                  :counter="10"-->
+<!--                  label="Название"-->
+<!--                  class="col-4"-->
+<!--                  required-->
+<!--                  @input="$v.nameField.$touch()"-->
+<!--                  @blur="$v.nameField.$touch()"-->
+<!--                ></v-text-field>-->
+<!--                <v-select-->
+<!--                  v-model="selectTypesField"-->
+<!--                  :items="arrayTypesField"-->
+<!--                  :error-messages="selectTypesFieldErrors"-->
+<!--                  label="Тип данных"-->
+<!--                  class="col-4"-->
+<!--                  required-->
+<!--                  @change="$v.selectTypesField.$touch()"-->
+<!--                  @blur="$v.selectTypesField.$touch()"-->
+<!--                ></v-select>-->
+<!--                <v-checkbox-->
+<!--                  v-model="checkbox"-->
+<!--                  :error-messages="checkboxErrors"-->
+<!--                  label="Добавить связи"-->
+<!--                  class="col-4"-->
+<!--                  @change="$v.checkbox.$touch()"-->
+<!--                  @blur="$v.checkbox.$touch()"-->
+<!--                ></v-checkbox>-->
+              </form>
             </v-dialog>
           </v-toolbar>
         </template>
         <template v-slot:item.actions="{ item }">
-            <v-icon
+          <v-icon
             small
             class="mr-2"
             @click="openDialog(item)"
@@ -214,24 +135,33 @@
   </v-container>
 </template>
 <script>
-  // import { email } from 'vee-validate'
+  import Vue from 'vue'
+  import vuelidate from 'vuelidate'
+  // import { validationMixin } from 'vuelidate'
   import { entities } from '@/store/modules'
   import { mapFields } from '@/js/update_form.js'
+  import { required, maxLength } from 'vuelidate/lib/validators'
+  import TemplateField from '@/dashboard/entities/TemplateField'
+  Vue.use(vuelidate)
   export default {
     name: 'ManageEntities',
+    components: {
+      'template-field': TemplateField,
+    },
     data: () => ({
-      valid: false,
-      firstname: '',
-      lastname: '',
-      nameRules: [
-        v => !!v || 'Name is required',
-        v => v.length <= 10 || 'Name must be less than 10 characters',
+      nameField: '',
+      selectTypesField: null,
+      arrayTypesField: [
+        'ID',
+        'Текст',
+        'Число',
+        'Да/Нет',
+        'Фото',
+        'Локация',
+        'Видео',
+        'Аудио',
       ],
-      email: '',
-      emailRules: [
-        v => !!v || 'E-mail is required',
-        v => /.+@.+/.test(v) || 'E-mail must be valid',
-      ],
+      checkboxBind: false,
       dialog: false,
       dialogDelete: false,
       options: {},
@@ -257,10 +187,31 @@
         protein: 0,
       },
     }),
-
+    validations: {
+      nameField: { required, maxLength: maxLength(20) },
+      selectTypesField: { required },
+      checkboxBind: {
+        checked (val) {
+          return val
+        },
+      },
+    },
     computed: {
       ...entities.mapState(['error', 'loading']),
       ...entities.mapGetters(['items', 'totalItems']),
+      selectTypesFieldErrors () {
+        const errors = []
+        if (!this.$v.selectTypesField.$dirty) return errors
+        !this.$v.selectTypesField.required && errors.push('Обязательное поле')
+        return errors
+      },
+      nameFieldErrors () {
+        const errors = []
+        if (!this.$v.nameField.$dirty) return errors
+        !this.$v.nameField.maxLength && errors.push('Название должно быть не более 20 символов')
+        !this.$v.nameField.required && errors.push('Обязательное поле')
+        return errors
+      },
       curItem: {
         get () {
           return this.currentItem ? this.currentItem : this.defaultItem
@@ -282,19 +233,16 @@
         return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
       },
     },
-
     watch: {
       $route: {
         immediate: true,
         handler: 'getEntities',
       },
-
       dialog: {
         handler (value) {
           value || this.closeDialog()
         },
       },
-
       // error: {
       //   immediate: true,
       //   handler: 'reportError',
@@ -313,13 +261,22 @@
         'deleteItemConfirm',
         'openDialog',
       ]),
+      submit () {
+        this.$v.$touch()
+      },
+      clear () {
+        this.$v.$reset()
+        this.nameField = ''
+        this.selectTypesField = null
+        this.checkboxBind = false
+      },
     },
   }
 </script>
 <style>
-  .v-dialog.v-dialog--active {
-    height: 500px;
-    max-width: 1000px !important;
-    background: #fff;
-  }
+.v-dialog.v-dialog--active {
+  height: 500px;
+  max-width: 1000px !important;
+  background: #fff;
+}
 </style>
