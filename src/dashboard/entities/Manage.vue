@@ -51,108 +51,102 @@
                   New Item
                 </v-btn>
               </template>
-              <v-card>
-                <v-card-title>
-                  <span class="headline">{{ formTitle }}</span>
-                </v-card-title>
+              <form
+                id="form"
+                class="pa-4"
+              >
+                <component
+                  v-for="(comp, index) in arrayComponentsField"
+                  :key="index"
+                  :is="comp"
+                />
+                <v-spacer />
+                <v-row class="mt-10">
+                  <v-btn
+                    color="blue"
+                    class="ml-4 mr-4"
+                    @click="addTemplateField"
+                  >
+                    Добавить ещё поле
+                  </v-btn>
+                </v-row>
+                <v-container class="py-0">
+                  <v-row>
+                    <v-col
+                      cols="6"
+                    >
+                      <v-text-field
+                        ref="search"
+                        v-model="search"
+                        full-width
+                        hide-details
+                        label="Поиск"
+                        single-line
+                      ></v-text-field>
+                      <v-list>
+                        <template v-for="item in listExistBinds">
+                          <v-list-item
+                            v-if="!arraySelectedBind.includes(item)"
+                            :key="item.text"
+                            :disabled="loadingBind"
+                            @click="arraySelectedBind.push(item)"
+                          >
+                            <v-list-item-title v-text="item.text"></v-list-item-title>
+                          </v-list-item>
+                        </template>
+                      </v-list>
+                    </v-col>
+                    <v-col
+                      cols="6"
+                      >
+                      <v-col
+                        cols="6"
+                        v-for="(selection, i) in listSelectedBind"
+                        :key="selection.text"
+                        class="shrink"
+                      >
+                        <v-chip
+                          :disabled="loadingBind"
+                          close
+                          @click:close="arraySelectedBind.splice(i, 1)"
+                        >
+                          {{ selection.text }}
+                        </v-chip>
+                      </v-col>
+                    </v-col>
+                  </v-row>
+                </v-container>
 
-                <v-card-text>
-                  <v-container>
-                    <v-row>
-                      <v-col
-                        cols="12"
-                        sm="6"
-                      >
-                        <v-text-field
-                          v-model="curItem.name"
-                          label="Dessert name"
-                        ></v-text-field>
-                      </v-col>
-                      <v-col
-                        cols="12"
-                        sm="6"
-                      >
-                        <v-text-field
-                          v-model="curItem.calories"
-                          label="Calories"
-                        ></v-text-field>
-                      </v-col>
-                      <v-col
-                        cols="12"
-                        sm="6"
-                      >
-                        <v-text-field
-                          v-model="curItem.fat"
-                          label="Fat (g)"
-                        ></v-text-field>
-                      </v-col>
-                      <v-col
-                        cols="12"
-                        sm="6"
-                      >
-                        <v-text-field
-                          v-model="curItem.carbs"
-                          label="Carbs (g)"
-                        ></v-text-field>
-                      </v-col>
-                      <v-col
-                        cols="12"
-                        sm="6"
-                      >
-                        <v-text-field
-                          v-model="curItem.protein"
-                          label="Protein (g)"
-                        ></v-text-field>
-                      </v-col>
-                    </v-row>
-                  </v-container>
-                </v-card-text>
+<!--                <v-divider v-if="!allSelected"></v-divider>-->
+                <v-divider></v-divider>
 
                 <v-card-actions>
                   <v-spacer></v-spacer>
                   <v-btn
-                    color="blue darken-1"
-                    text
-                    @click="hideModalM(false)"
+                    :disabled="!arraySelectedBind.length"
+                    :loading="loadingBind"
+                    color="purple"
+                    @click="addBind"
                   >
-                    Cancel
-                  </v-btn>
-                  <v-btn
-                    color="blue darken-1"
-                    text
-                    @click="saveNewItem(curItem)"
-                  >
-                    Save
+                    Добавить связи
                   </v-btn>
                 </v-card-actions>
-              </v-card>
-            </v-dialog>
-            <v-dialog
-              v-model="dialogDelete"
-              max-width="500px"
-            >
-              <v-card>
-                <v-card-title class="headline">Are you sure you want to delete this item?</v-card-title>
-                <v-card-actions>
-                  <v-spacer></v-spacer>
+                <v-spacer />
+                <v-row class="mt-10">
                   <v-btn
-                    color="blue darken-1"
-                    text
-                    @click="hideModalDelM(false)"
-                  >Cancel</v-btn>
-                  <v-btn
-                    color="blue darken-1"
-                    text
-                    @click="deleteItemConfirm"
-                  >OK</v-btn>
-                  <v-spacer></v-spacer>
-                </v-card-actions>
-              </v-card>
+                    class="ml-4"
+                    color="success"
+                    @click="submit"
+                  >
+                    Отправить
+                  </v-btn>
+                </v-row>
+              </form>
             </v-dialog>
           </v-toolbar>
         </template>
         <template v-slot:item.actions="{ item }">
-            <v-icon
+          <v-icon
             small
             class="mr-2"
             @click="openDialog(item)"
@@ -173,9 +167,31 @@
 <script>
   import { entities } from '@/store/modules'
   import { mapFields } from '@/js/update_form.js'
+  import Field from '@/dashboard/entities/Field'
   export default {
     name: 'ManageEntities',
+    components: {
+      Field,
+    },
     data: () => ({
+      arrayComponentsField: [Field],
+      arrayExistBinds: [
+        {
+          text: 'СКЮ',
+        },
+        {
+          text: 'Регион',
+        },
+        {
+          text: 'ТТ',
+        },
+        {
+          text: 'Пользователь',
+        },
+      ],
+      loadingBind: false,
+      search: '',
+      arraySelectedBind: [],
       dialog: false,
       dialogDelete: false,
       options: {},
@@ -201,10 +217,32 @@
         protein: 0,
       },
     }),
-
     computed: {
       ...entities.mapState(['error', 'loading']),
       ...entities.mapGetters(['items', 'totalItems']),
+      allSelected () {
+        return this.arraySelectedBind.length === this.arrayExistBinds.length
+      },
+      listExistBinds () {
+        const search = this.search.toLowerCase()
+
+        if (!search) return this.arrayExistBinds
+
+        return this.arrayExistBinds.filter(item => {
+          const text = item.text.toLowerCase()
+
+          return text.indexOf(search) > -1
+        })
+      },
+      listSelectedBind () {
+        const listSelectedBind = []
+
+        for (const selection of this.arraySelectedBind) {
+          listSelectedBind.push(selection)
+        }
+
+        return listSelectedBind
+      },
       curItem: {
         get () {
           return this.currentItem ? this.currentItem : this.defaultItem
@@ -226,19 +264,19 @@
         return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
       },
     },
-
     watch: {
       $route: {
         immediate: true,
         handler: 'getEntities',
       },
-
+      arraySelectedBind () {
+        this.search = ''
+      },
       dialog: {
         handler (value) {
           value || this.closeDialog()
         },
       },
-
       // error: {
       //   immediate: true,
       //   handler: 'reportError',
@@ -257,6 +295,32 @@
         'deleteItemConfirm',
         'openDialog',
       ]),
+      addTemplateField () {
+        this.arrayComponentsField.push(Field)
+        console.log(this.arrayComponentsField)
+      },
+      addBind () {
+        this.loadingBind = true
+
+        setTimeout(() => {
+          this.search = ''
+          this.arraySelectedBind = []
+          this.loadingBind = false
+        }, 2000)
+      },
+      submit () {
+        const form = document.getElementById('form')
+        const formData = new FormData(form)
+        console.log(formData)
+        // this.$v.$touch()
+      },
     },
   }
 </script>
+<style>
+.v-dialog.v-dialog--active {
+  height: 500px;
+  max-width: 1000px !important;
+  background: #fff;
+}
+</style>
