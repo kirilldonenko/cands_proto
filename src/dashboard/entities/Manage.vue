@@ -52,65 +52,95 @@
                 </v-btn>
               </template>
               <form
+                id="form"
                 class="pa-4"
               >
-                <template-field></template-field>
-                <v-btn
-                  color="red"
-                  @click="clear"
-                >
-                  Очистить
-                </v-btn>
-                <v-btn
-                  color="primary"
-                  class="mr-4"
-                  @click="saveNewField"
-                >
-                  Сохранить
-                </v-btn>
-                <v-btn
-                  color="blue"
-                  @click="addTemplateField"
-                >
-                   Добавить ещё поле
-                </v-btn>
+                <component
+                  v-for="(comp, index) in arrayComponentsField"
+                  :key="index"
+                  :is="comp"
+                />
                 <v-spacer />
                 <v-row class="mt-10">
                   <v-btn
+                    color="blue"
                     class="ml-4 mr-4"
+                    @click="addTemplateField"
+                  >
+                    Добавить ещё поле
+                  </v-btn>
+                </v-row>
+                <v-container class="py-0">
+                  <v-row>
+                    <v-col
+                      cols="6"
+                    >
+                      <v-text-field
+                        ref="search"
+                        v-model="search"
+                        full-width
+                        hide-details
+                        label="Поиск"
+                        single-line
+                      ></v-text-field>
+                      <v-list>
+                        <template v-for="item in listExistBinds">
+                          <v-list-item
+                            v-if="!arraySelectedBind.includes(item)"
+                            :key="item.text"
+                            :disabled="loadingBind"
+                            @click="arraySelectedBind.push(item)"
+                          >
+                            <v-list-item-title v-text="item.text"></v-list-item-title>
+                          </v-list-item>
+                        </template>
+                      </v-list>
+                    </v-col>
+                    <v-col
+                      cols="6"
+                      >
+                      <v-col
+                        cols="6"
+                        v-for="(selection, i) in listSelectedBind"
+                        :key="selection.text"
+                        class="shrink"
+                      >
+                        <v-chip
+                          :disabled="loadingBind"
+                          close
+                          @click:close="arraySelectedBind.splice(i, 1)"
+                        >
+                          {{ selection.text }}
+                        </v-chip>
+                      </v-col>
+                    </v-col>
+                  </v-row>
+                </v-container>
+
+<!--                <v-divider v-if="!allSelected"></v-divider>-->
+                <v-divider></v-divider>
+
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn
+                    :disabled="!arraySelectedBind.length"
+                    :loading="loadingBind"
+                    color="purple"
+                    @click="addBind"
+                  >
+                    Добавить связи
+                  </v-btn>
+                </v-card-actions>
+                <v-spacer />
+                <v-row class="mt-10">
+                  <v-btn
+                    class="ml-4"
+                    color="success"
                     @click="submit"
                   >
                     Отправить
                   </v-btn>
                 </v-row>
-<!--                <v-text-field-->
-<!--                  v-model="nameField"-->
-<!--                  :error-messages="nameFieldErrors"-->
-<!--                  :counter="10"-->
-<!--                  label="Название"-->
-<!--                  class="col-4"-->
-<!--                  required-->
-<!--                  @input="$v.nameField.$touch()"-->
-<!--                  @blur="$v.nameField.$touch()"-->
-<!--                ></v-text-field>-->
-<!--                <v-select-->
-<!--                  v-model="selectTypesField"-->
-<!--                  :items="arrayTypesField"-->
-<!--                  :error-messages="selectTypesFieldErrors"-->
-<!--                  label="Тип данных"-->
-<!--                  class="col-4"-->
-<!--                  required-->
-<!--                  @change="$v.selectTypesField.$touch()"-->
-<!--                  @blur="$v.selectTypesField.$touch()"-->
-<!--                ></v-select>-->
-<!--                <v-checkbox-->
-<!--                  v-model="checkbox"-->
-<!--                  :error-messages="checkboxErrors"-->
-<!--                  label="Добавить связи"-->
-<!--                  class="col-4"-->
-<!--                  @change="$v.checkbox.$touch()"-->
-<!--                  @blur="$v.checkbox.$touch()"-->
-<!--                ></v-checkbox>-->
               </form>
             </v-dialog>
           </v-toolbar>
@@ -135,33 +165,33 @@
   </v-container>
 </template>
 <script>
-  import Vue from 'vue'
-  import vuelidate from 'vuelidate'
-  // import { validationMixin } from 'vuelidate'
   import { entities } from '@/store/modules'
   import { mapFields } from '@/js/update_form.js'
-  import { required, maxLength } from 'vuelidate/lib/validators'
-  import TemplateField from '@/dashboard/entities/TemplateField'
-  Vue.use(vuelidate)
+  import Field from '@/dashboard/entities/Field'
   export default {
     name: 'ManageEntities',
     components: {
-      'template-field': TemplateField,
+      Field,
     },
     data: () => ({
-      nameField: '',
-      selectTypesField: null,
-      arrayTypesField: [
-        'ID',
-        'Текст',
-        'Число',
-        'Да/Нет',
-        'Фото',
-        'Локация',
-        'Видео',
-        'Аудио',
+      arrayComponentsField: [Field],
+      arrayExistBinds: [
+        {
+          text: 'СКЮ',
+        },
+        {
+          text: 'Регион',
+        },
+        {
+          text: 'ТТ',
+        },
+        {
+          text: 'Пользователь',
+        },
       ],
-      checkboxBind: false,
+      loadingBind: false,
+      search: '',
+      arraySelectedBind: [],
       dialog: false,
       dialogDelete: false,
       options: {},
@@ -187,30 +217,31 @@
         protein: 0,
       },
     }),
-    validations: {
-      nameField: { required, maxLength: maxLength(20) },
-      selectTypesField: { required },
-      checkboxBind: {
-        checked (val) {
-          return val
-        },
-      },
-    },
     computed: {
       ...entities.mapState(['error', 'loading']),
       ...entities.mapGetters(['items', 'totalItems']),
-      selectTypesFieldErrors () {
-        const errors = []
-        if (!this.$v.selectTypesField.$dirty) return errors
-        !this.$v.selectTypesField.required && errors.push('Обязательное поле')
-        return errors
+      allSelected () {
+        return this.arraySelectedBind.length === this.arrayExistBinds.length
       },
-      nameFieldErrors () {
-        const errors = []
-        if (!this.$v.nameField.$dirty) return errors
-        !this.$v.nameField.maxLength && errors.push('Название должно быть не более 20 символов')
-        !this.$v.nameField.required && errors.push('Обязательное поле')
-        return errors
+      listExistBinds () {
+        const search = this.search.toLowerCase()
+
+        if (!search) return this.arrayExistBinds
+
+        return this.arrayExistBinds.filter(item => {
+          const text = item.text.toLowerCase()
+
+          return text.indexOf(search) > -1
+        })
+      },
+      listSelectedBind () {
+        const listSelectedBind = []
+
+        for (const selection of this.arraySelectedBind) {
+          listSelectedBind.push(selection)
+        }
+
+        return listSelectedBind
       },
       curItem: {
         get () {
@@ -238,6 +269,9 @@
         immediate: true,
         handler: 'getEntities',
       },
+      arraySelectedBind () {
+        this.search = ''
+      },
       dialog: {
         handler (value) {
           value || this.closeDialog()
@@ -261,14 +295,24 @@
         'deleteItemConfirm',
         'openDialog',
       ]),
-      submit () {
-        this.$v.$touch()
+      addTemplateField () {
+        this.arrayComponentsField.push(Field)
+        console.log(this.arrayComponentsField)
       },
-      clear () {
-        this.$v.$reset()
-        this.nameField = ''
-        this.selectTypesField = null
-        this.checkboxBind = false
+      addBind () {
+        this.loadingBind = true
+
+        setTimeout(() => {
+          this.search = ''
+          this.arraySelectedBind = []
+          this.loadingBind = false
+        }, 2000)
+      },
+      submit () {
+        const form = document.getElementById('form')
+        const formData = new FormData(form)
+        console.log(formData)
+        // this.$v.$touch()
       },
     },
   }
