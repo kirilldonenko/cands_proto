@@ -97,7 +97,7 @@
     data: () => ({
       items: [
         {
-          title: 'rtables',
+          title: 'Entities',
           icon: 'mdi-clipboard-outline',
           to: '/entities',
         },

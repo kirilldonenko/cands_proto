@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-row>
-      <v-text-field
+      {{ fieldId }} . <v-text-field
         v-model="nameField"
         :error-messages="nameFieldErrors"
         :counter="20"
@@ -21,13 +21,6 @@
         @change="$v.selectTypesField.$touch()"
         @blur="$v.selectTypesField.$touch()"
       ></v-select>
-      <v-checkbox
-        v-model="checkboxBind"
-        label="Добавить связи"
-        class="col-4"
-        @change="$v.checkboxBind.$touch()"
-        @blur="$v.checkboxBind.$touch()"
-      ></v-checkbox>
     </v-row>
     <v-spacer />
     <v-row
@@ -35,26 +28,37 @@
     >
       <v-btn
         class="ml-8 mr-4"
+        fab
+        dark
         color="grey"
         @click="clear"
       >
-        Очистить
+        <v-icon dark>
+          mdi-close
+        </v-icon>
       </v-btn>
       <v-btn
-        color="primary"
         class="mr-4"
-        @click="saveNewField"
+        fab
+        dark
+        color="success"
+        @click="saveField(fieldId, nameField, selectTypesField)"
       >
-        Сохранить
+        <v-icon dark>
+          mdi-content-save-outline
+        </v-icon>
       </v-btn>
       <v-btn
+        fab
+        dark
         color="red"
-        @click="deleteField"
+        @click="deleteField(fieldId)"
       >
-        Удалить
+        <v-icon dark>
+          mdi-delete
+        </v-icon>
       </v-btn>
     </v-row>
-    <v-divider />
   </v-container>
 </template>
 
@@ -66,10 +70,12 @@
 
   export default {
     name: 'Field',
+    props: {
+      fieldId: Number,
+    },
     data: () => ({
       nameField: '',
       selectTypesField: null,
-      checkboxBind: false,
       arrayTypesField: [
         'ID',
         'Текст',
@@ -84,11 +90,6 @@
     validations: {
       nameField: { required, maxLength: maxLength(20) },
       selectTypesField: { required },
-      checkboxBind: {
-        checked (val) {
-          return val
-        },
-      },
     },
     computed: {
       selectTypesFieldErrors () {
@@ -106,13 +107,16 @@
       },
     },
     methods: {
-      saveNewField () {
-        console.log('saveNewField')
+      saveField (id, name, select) {
+        console.log('item-')
+        console.log(id, name, select)
+        this.$emit('save-or-delete', 'save', id, name, select)
       },
-      deleteField () {
-        console.log('deleteField')
-        this.$destroy()
+      deleteField (id) {
+        console.log('child deleteField', id)
         this.$el.parentNode.removeChild(this.$el)
+        this.$emit('save-or-delete', 'delete', id, '', '')
+        this.$destroy()
       },
       clear () {
         this.$v.$reset()
@@ -125,7 +129,5 @@
 </script>
 
 <style scoped>
-  .theme--light.v-divider {
-    border-color: #000 !important;
-  }
+
 </style>
