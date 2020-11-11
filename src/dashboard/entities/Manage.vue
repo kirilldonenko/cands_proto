@@ -59,15 +59,21 @@
                   v-for="(comp, index) in arrayComponentsField"
                   :key="index"
                   :is="comp"
+                  :field-id="index"
+                  @save-or-delete="updateField"
                 />
                 <v-spacer />
                 <v-row class="mt-10">
                   <v-btn
-                    color="blue"
                     class="ml-4 mr-4"
+                    fab
+                    dark
+                    color="indigo"
                     @click="addTemplateField"
                   >
-                    Добавить ещё поле
+                    <v-icon dark>
+                      mdi-plus
+                    </v-icon>
                   </v-btn>
                 </v-row>
                 <v-container class="py-0">
@@ -84,12 +90,12 @@
                         single-line
                       ></v-text-field>
                       <v-list>
-                        <template v-for="item in listExistBinds">
+                        <template v-for="item in listExistTags">
                           <v-list-item
-                            v-if="!arraySelectedBind.includes(item)"
+                            v-if="!arraySelectedTags.includes(item)"
                             :key="item.text"
-                            :disabled="loadingBind"
-                            @click="arraySelectedBind.push(item)"
+                            :disabled="loadingTag"
+                            @click="arraySelectedTags.push(item)"
                           >
                             <v-list-item-title v-text="item.text"></v-list-item-title>
                           </v-list-item>
@@ -101,14 +107,14 @@
                       >
                       <v-col
                         cols="6"
-                        v-for="(selection, i) in listSelectedBind"
+                        v-for="(selection, i) in listSelectedTag"
                         :key="selection.text"
                         class="shrink"
                       >
                         <v-chip
-                          :disabled="loadingBind"
+                          :disabled="loadingTag"
                           close
-                          @click:close="arraySelectedBind.splice(i, 1)"
+                          @click:close="arraySelectedTags.splice(i, 1)"
                         >
                           {{ selection.text }}
                         </v-chip>
@@ -117,28 +123,61 @@
                   </v-row>
                 </v-container>
 
-<!--                <v-divider v-if="!allSelected"></v-divider>-->
-                <v-divider></v-divider>
-
                 <v-card-actions>
                   <v-spacer></v-spacer>
                   <v-btn
-                    :disabled="!arraySelectedBind.length"
-                    :loading="loadingBind"
-                    color="purple"
-                    @click="addBind"
+                    fab
+                    dark
+                    :loading="loadingTag"
+                    color="grey"
+                    @click="replyTags"
                   >
-                    Добавить связи
+                    <v-icon dark>
+                      mdi-reply-outline
+                    </v-icon>
+                  </v-btn>
+                  <v-btn
+                    fab
+                    dark
+                    :disabled="!arraySelectedTags.length"
+                    :loading="loadingTag"
+                    color="purple"
+                    @click="addTags"
+                  >
+                    <v-icon dark>
+                      mdi-link-variant
+                    </v-icon>
                   </v-btn>
                 </v-card-actions>
                 <v-spacer />
                 <v-row class="mt-10">
+<!--                  <select v-model="selected">-->
+<!--                    <option v-for="option in options" v-bind:value="option.value">-->
+<!--                      {{ option.text }}-->
+<!--                    </option>-->
+<!--                  </select>-->
+                  <v-select
+                    v-model="bindTag"
+                    :items="arrayBindTag"
+                    :error-messages="selectBindTagErrors"
+                    label="Поле связей"
+                    class="col-4"
+                    required
+                    @change="$v.bindTag.$touch()"
+                    @blur="$v.bindTag.$touch()"
+                  ></v-select>
+                </v-row>
+                <v-row class="mt-10">
                   <v-btn
+                    fab
+                    dark
                     class="ml-4"
                     color="success"
                     @click="submit"
                   >
-                    Отправить
+                    <v-icon dark>
+                      mdi-send
+                    </v-icon>
                   </v-btn>
                 </v-row>
               </form>
@@ -168,14 +207,22 @@
   import { entities } from '@/store/modules'
   import { mapFields } from '@/js/update_form.js'
   import Field from '@/dashboard/entities/Field'
+  import { required } from 'vuelidate/lib/validators'
   export default {
     name: 'ManageEntities',
     components: {
       Field,
     },
     data: () => ({
+      arrayBindTag: [],
+      bindTag: null,
+      objEntity: {
+        fields: [],
+        tags: [],
+        bind: '',
+      },
       arrayComponentsField: [Field],
-      arrayExistBinds: [
+      arrayExistTags: [
         {
           text: 'СКЮ',
         },
@@ -189,9 +236,9 @@
           text: 'Пользователь',
         },
       ],
-      loadingBind: false,
+      loadingTag: false,
       search: '',
-      arraySelectedBind: [],
+      arraySelectedTags: [],
       dialog: false,
       dialogDelete: false,
       options: {},
@@ -217,31 +264,40 @@
         protein: 0,
       },
     }),
+    validations: {
+      bindTag: { required },
+    },
     computed: {
       ...entities.mapState(['error', 'loading']),
       ...entities.mapGetters(['items', 'totalItems']),
-      allSelected () {
-        return this.arraySelectedBind.length === this.arrayExistBinds.length
+      selectBindTagErrors () {
+        const errors = []
+        if (!this.$v.bindTag.$dirty) return errors
+        !this.$v.bindTag.required && errors.push('Обязательное поле')
+        return errors
       },
-      listExistBinds () {
+      allSelected () {
+        return this.arraySelectedTags.length === this.arrayExistTags.length
+      },
+      listExistTags () {
         const search = this.search.toLowerCase()
 
-        if (!search) return this.arrayExistBinds
+        if (!search) return this.arrayExistTags
 
-        return this.arrayExistBinds.filter(item => {
+        return this.arrayExistTags.filter(item => {
           const text = item.text.toLowerCase()
 
           return text.indexOf(search) > -1
         })
       },
-      listSelectedBind () {
-        const listSelectedBind = []
+      listSelectedTag () {
+        const listSelectedTag = []
 
-        for (const selection of this.arraySelectedBind) {
-          listSelectedBind.push(selection)
+        for (const selection of this.arraySelectedTags) {
+          listSelectedTag.push(selection)
         }
 
-        return listSelectedBind
+        return listSelectedTag
       },
       curItem: {
         get () {
@@ -269,7 +325,7 @@
         immediate: true,
         handler: 'getEntities',
       },
-      arraySelectedBind () {
+      arraySelectedTags () {
         this.search = ''
       },
       dialog: {
@@ -299,20 +355,36 @@
         this.arrayComponentsField.push(Field)
         console.log(this.arrayComponentsField)
       },
-      addBind () {
-        this.loadingBind = true
+      updateField (check, id, name, select) {
+        if (check === 'save') {
+          this.arrayBindTag.push(name)
+          this.objEntity.fields.push({ nameField: name, typeField: select })
+        } else {
+          this.objEntity.fields.splice(id, 1)
+        }
+        console.log(this.objEntity)
+      },
+      replyTags () {
+        this.objEntity.tags = []
+        this.arraySelectedTags = []
+        console.log('replyTags')
+        console.log(this.objEntity)
+      },
+      addTags () {
+        this.loadingTag = true
 
         setTimeout(() => {
+          this.objEntity.tags = this.arraySelectedTags
+          console.log('addTags')
+          console.log(this.objEntity)
           this.search = ''
-          this.arraySelectedBind = []
-          this.loadingBind = false
+          this.arraySelectedTags = []
+          this.loadingTag = false
         }, 2000)
       },
       submit () {
-        const form = document.getElementById('form')
-        const formData = new FormData(form)
-        console.log(formData)
-        // this.$v.$touch()
+        this.objEntity.bind = this.bindTag
+        console.log(this.objEntity.bind)
       },
     },
   }
