@@ -1,86 +1,77 @@
 [
   {
-    "name": "Frozen Yogurt",
-    "calories": 159,
-    "fat": 6.0,
-    "carbs": 24,
-    "protein": 4.0
+    "name": "NameField 1",
+    "fields": 5,
+    "notes": 60
   },
   {
-    "name": "Ice cream sandwich",
-    "calories": 237,
-    "fat": 9.0,
-    "carbs": 37,
-    "protein": 4.3
+    "name": "NameField 2",
+    "fields": 3,
+    "notes": 160
   },
   {
-    "name": "Eclair",
-    "calories": 262,
-    "fat": 16.0,
-    "carbs": 23,
-    "protein": 6.0
+    "name": "NameField 3",
+    "fields": 7,
+    "notes": 250
   },
   {
-    "name": "Cupcake",
-    "calories": 305,
-    "fat": 3.7,
-    "carbs": 67,
-    "protein": 4.3
+    "name": "NameField 4",
+    "fields": 5,
+    "notes": 600
   },
   {
-    "name": "Frozen Yogurt",
-    "calories": 159,
-    "fat": 6.0,
-    "carbs": 24,
-    "protein": 4.0
+    "name": "NameField 5",
+    "fields": 10,
+    "notes": 500
   },
   {
-    "name": "Ice cream sandwich",
-    "calories": 237,
-    "fat": 9.0,
-    "carbs": 37,
-    "protein": 4.3
+    "name": "NameField 1",
+    "fields": 5,
+    "notes": 60
   },
   {
-    "name": "Eclair",
-    "calories": 262,
-    "fat": 16.0,
-    "carbs": 23,
-    "protein": 6.0
+    "name": "NameField 2",
+    "fields": 3,
+    "notes": 160
   },
   {
-    "name": "Cupcake",
-    "calories": 305,
-    "fat": 3.7,
-    "carbs": 67,
-    "protein": 4.3
+    "name": "NameField 3",
+    "fields": 7,
+    "notes": 250
   },
   {
-    "name": "Frozen Yogurt",
-    "calories": 159,
-    "fat": 6.0,
-    "carbs": 24,
-    "protein": 4.0
+    "name": "NameField 4",
+    "fields": 5,
+    "notes": 600
   },
   {
-    "name": "Ice cream sandwich",
-    "calories": 237,
-    "fat": 9.0,
-    "carbs": 37,
-    "protein": 4.3
+    "name": "NameField 5",
+    "fields": 10,
+    "notes": 500
   },
   {
-    "name": "Eclair",
-    "calories": 262,
-    "fat": 16.0,
-    "carbs": 23,
-    "protein": 6.0
+    "name": "NameField 1",
+    "fields": 5,
+    "notes": 60
   },
   {
-    "name": "Cupcake",
-    "calories": 305,
-    "fat": 3.7,
-    "carbs": 67,
-    "protein": 4.3
+    "name": "NameField 2",
+    "fields": 3,
+    "notes": 160
+  },
+  {
+    "name": "NameField 3",
+    "fields": 7,
+    "notes": 250
+  },
+  {
+    "name": "NameField 4",
+    "fields": 5,
+    "notes": 600
+  },
+  {
+    "name": "NameField 5",
+    "fields": 10,
+    "notes": 500
   }
 ]
